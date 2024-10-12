@@ -170,7 +170,7 @@ local auraDropdown = Instance.new("TextButton")
 auraDropdown.Size = UDim2.new(1, 0, 0, 40)
 auraDropdown.Position = UDim2.new(0, 0, 0, 30)
 auraDropdown.BackgroundColor3 = Color3.fromRGB(30, 30, 30)
-auraDropdown.Text = "Select Aura"
+auraDropdown.Text = ""
 auraDropdown.TextColor3 = Color3.fromRGB(255, 255, 255)
 auraDropdown.Font = Enum.Font.GothamBold
 auraDropdown.TextSize = 14
@@ -183,40 +183,52 @@ auraSelection.Position = UDim2.new(0, 0, 0, 70)
 auraSelection.BackgroundColor3 = Color3.fromRGB(20, 20, 20)
 auraSelection.Parent = Tab
 
--- Créer un cadre pour la sélection d'aura
-local auraSelection = Instance.new("Frame")
-auraSelection.Size = UDim2.new(1, 0, 0, 0) -- La hauteur sera ajustée dynamiquement
+-- Créer un cadre pour la sélection d'aura avec défilement
+local auraSelection = Instance.new("ScrollingFrame")
+auraSelection.Size = UDim2.new(1, 0, 0, 200) -- Limite la hauteur du cadre
 auraSelection.Position = UDim2.new(0, 0, 0, 30) -- Positionne le cadre sous le titre
 auraSelection.BackgroundColor3 = Color3.fromRGB(30, 30, 30)
+auraSelection.ScrollBarThickness = 10 -- Épaisseur de la barre de défilement
 auraSelection.Parent = fr
+auraSelection.CanvasSize = UDim2.new(0, 0, 0, 0) -- Initialiser la taille du canevas à 0
+auraSelection.ScrollBarImageColor3 = Color3.fromRGB(255, 255, 255) -- Couleur de la barre de défilement
+
+local auraSelectionList = Instance.new("Frame")
+auraSelectionList.Size = UDim2.new(1, 0, 0, 0) -- La hauteur sera ajustée dynamiquement
+auraSelectionList.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
+auraSelectionList.LayoutOrder = 1
+auraSelectionList.Parent = auraSelection
+
+-- Utiliser un UIListLayout pour gérer la disposition des boutons
+local layout = Instance.new("UIListLayout")
+layout.Padding = UDim.new(0, 5) -- Espacement entre les boutons
+layout.SortOrder = Enum.SortOrder.LayoutOrder
+layout.Parent = auraSelectionList
 
 -- Créer les boutons pour chaque aura
 for _, auraName in pairs(auraNames) do
     local auraButton = Instance.new("TextButton")
     auraButton.Size = UDim2.new(1, -10, 0, 40) -- Largeur complète moins un espacement
-    auraButton.Position = UDim2.new(0, 5, 0, (_ - 1) * 45) -- Positionne chaque bouton avec un espacement
     auraButton.BackgroundColor3 = Color3.fromRGB(40, 40, 40)
     auraButton.Text = auraName
     auraButton.TextColor3 = Color3.fromRGB(255, 255, 255)
     auraButton.Font = Enum.Font.GothamBold
     auraButton.TextSize = 14
-    auraButton.Parent = auraSelection
+    auraButton.Parent = auraSelectionList
 
     auraButton.MouseButton1Click:Connect(function()
         equipAura(auraName)
     end)
 end
 
--- Ajuster la taille du Canvas en fonction du nombre d'aura
+-- Ajuster la taille du canevas du ScrollingFrame
 local function adjustAuraSelectionSize()
     local auraCount = #auraNames
     local totalHeight = auraCount * 45 -- Hauteur de chaque bouton plus espacement
-    auraSelection.Size = UDim2.new(1, 0, 0, math.clamp(totalHeight, 0, 300)) -- Limite à 300 pixels de hauteur
+    auraSelectionList.Size = UDim2.new(1, 0, 0, totalHeight) -- Ajuste la taille de la liste
+
+    -- Met à jour la taille du canevas pour activer le défilement
+    auraSelection.CanvasSize = UDim2.new(0, 0, 0, totalHeight) -- Met à jour la taille du canevas
 end
 
 adjustAuraSelectionSize()
-
--- Impression de tous les noms d'aura (facultatif, pour le débogage)
-for _, auraName in pairs(auraNames) do
-    print("Auras:", auraName)
-end
