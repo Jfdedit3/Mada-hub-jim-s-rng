@@ -1,6 +1,6 @@
 -- full script by z4trox
 -- ui by Jfdedit3
--- v3.4
+-- mada hub v3.4
 
 local TweenService = game:GetService("TweenService")
 
